@@ -32,6 +32,8 @@ import com.bicirikdwarf.emf.dwarf.DwarfModel
 import org.eclipse.emf.ecore.util.EContentsEList
 import org.eclipse.emf.ecore.EObject
 import com.bicirikdwarf.dwarf.Dwarf32Context
+import com.bicirikdwarf.emf.dwarf.CompositeType
+import java.util.Iterator
 
 public class DwarfModelFactory {
 	Map<Integer, Die> dies;
@@ -51,6 +53,7 @@ public class DwarfModelFactory {
 	private def processContext(Dwarf32Context dwarfContext) {
 		dwarfContext.compilationUnits.forEach[createDie(it.compileUnit)]
 		resolveReferences
+		resolveCompositeTypeTypedefs
 	}
 
 	private def Die createEmfObject(DebugInfoEntry die) {
@@ -133,6 +136,20 @@ public class DwarfModelFactory {
 				}
 			}
 		}
+	}
+	
+	private def resolveCompositeTypeTypedefs() {
+		val compositeTypes = model.eAllContents.filter(CompositeType)
+		val typedefs = model.eAllContents.filter(Typedef).filter[it.type instanceof CompositeType].toList
+		
+		compositeTypes.forEach[ c | c.typedef = typedefs.iterator.filter[it.type == c].onlyIfOne ]
+	}
+	
+	def <E> E onlyIfOne(Iterator<E> i) {
+		if( !i.hasNext ) return null;
+		var result = i.next;
+		if( i.hasNext ) return null;
+		result
 	}
 
 	private def createArrayType(DebugInfoEntry die) {
@@ -248,12 +265,16 @@ public class DwarfModelFactory {
 		subprogram.name = die.name
 		subprogram.declFile = die.declFile
 		subprogram.declLine = die.declLine
-		subprogram.type = die.createProxyForType
 		subprogram.lowPc = die.lowPc
 		subprogram.highPc = die.highPc
 		// subprogram.frameBase = die.frameBase
 		subprogram.gnuAllCallSites = die.gnuAllCallSites
 
+		subprogram.returnType = die.createProxyForType
+		var children = die.children.map[it.createDie]
+		subprogram.parameters.addAll(children.filter(FormalParameter))
+		subprogram.localVariables.addAll(children.filter(Variable))
+		
 		subprogram
 	}
 
@@ -270,8 +291,10 @@ public class DwarfModelFactory {
 		var subroutineType = die.createEmfObject as SubroutineType
 
 		subroutineType.prototyped = die.prototyped
-		subroutineType.type = die.createProxyForType
+		subroutineType.returnType = die.createProxyForType
 
+		var children = die.children.map[it.createDie]
+		subroutineType.parameters.addAll(children.filter(FormalParameter))
 		subroutineType
 	}
 
@@ -293,6 +316,8 @@ public class DwarfModelFactory {
 		unionType.declFile = die.declFile
 		unionType.declLine = die.declLine
 
+		unionType.members.addAll(die.children.map[it.createDie as Member])
+		
 		unionType
 	}
 

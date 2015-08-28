@@ -80,13 +80,11 @@ class PointerType extends Type {
 	refers Type ^type
 }
 
-class StructureType extends Type {
+class StructureType extends CompositeType {
 	Boolean declaration
 	Integer byteSize
 	Integer declFile
 	Integer declLine
-	
-	contains Member [] members	
 }
 
 class Subprogram extends Die {
@@ -94,11 +92,14 @@ class Subprogram extends Die {
 	String name
 	Integer declFile
 	Integer declLine
-	refers Type ^type
 	Integer lowPc
 	Integer highPc
 	Integer frameBase
 	Integer gnuAllCallSites
+	
+	refers Type returnType
+	contains FormalParameter[] parameters
+	contains Variable[] localVariables
 }
 
 class SubrangeType extends Type {
@@ -109,7 +110,8 @@ class SubrangeType extends Type {
 
 class SubroutineType extends Type {
 	Boolean prototyped
-	refers Type ^type
+	contains FormalParameter [] parameters
+	refers Type returnType
 }
 
 interface Type extends Die {}
@@ -118,10 +120,16 @@ class Typedef extends Type {
 	String name
 	Integer declFile
 	Integer declLine
+	
 	refers Type ^type
 }
 
-class UnionType extends Type {
+class CompositeType extends Type {
+	refers Typedef typedef
+	contains Member [] members
+}
+
+class UnionType extends CompositeType {
 	Integer byteSize
 	Integer declFile
 	Integer declLine
