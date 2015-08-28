@@ -10,10 +10,10 @@ The core parser project is an eclipse plugin without any dependencies.
 
 For EMF conversion:
 
-    var modelFactory = new DwarfModelFactory(dwarf)
+    var model = DwarfModelFactory::createModel(dwarf)
 
 Then you can traverse the model tree:
 
-    modelFactory.model.eAllContents.filter(StructureType).forEach[do what ever with it]
+    model.eAllContents.filter(StructureType).forEach[do what ever with it]
 
 The parser is tested with GCC 4.9.3. Only C related DebugInfoEntry is converted to EMF model.
