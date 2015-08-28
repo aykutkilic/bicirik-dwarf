@@ -36,17 +36,22 @@ import com.bicirikdwarf.dwarf.Dwarf32Context
 public class DwarfModelFactory {
 	Map<Integer, Die> dies;
 	DwarfModel model
-	Dwarf32Context dwarfContext
 
-	new(Dwarf32Context dwarfContext) {
+	public static def createModel(Dwarf32Context dwarfContext) {
+		var factory = new DwarfModelFactory()
+		factory.processContext(dwarfContext)
+		factory.model
+	}
+
+	private new() {
 		dies = new HashMap();
 		model = DwarfFactory::eINSTANCE.createDwarfModel
-		this.dwarfContext = dwarfContext
+	}
+	
+	private def processContext(Dwarf32Context dwarfContext) {
 		dwarfContext.compilationUnits.forEach[createDie(it.compileUnit)]
 		resolveReferences
 	}
-
-	def DwarfModel getModel() { model }
 
 	private def Die createEmfObject(DebugInfoEntry die) {
 		var f = DwarfFactory::eINSTANCE
@@ -83,7 +88,7 @@ public class DwarfModelFactory {
 		result
 	}
 
-	def Die createDie(DebugInfoEntry die) {
+	private def Die createDie(DebugInfoEntry die) {
 		return switch (die.abbrev.tag) {
 			case DW_TAG_array_type: die.createArrayType
 			case DW_TAG_base_type: die.createBaseType
@@ -109,7 +114,7 @@ public class DwarfModelFactory {
 		}
 	}
 
-	def resolveReferences() {
+	private def resolveReferences() {
 		for (element : model.eAllContents.toIterable) {
 			var iterator = element.eCrossReferences.iterator as EContentsEList.FeatureIterator<EObject>
 
