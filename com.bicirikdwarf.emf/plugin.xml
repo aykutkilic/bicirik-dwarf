@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated dwarf -->
+      <package
+            uri="com.bicirikdwarf.emf.dwarf"
+            class="com.bicirikdwarf.emf.dwarf.DwarfPackage"
+            genModel="model/dwarf.xcore"/>
+   </extension>
+
+</plugin>

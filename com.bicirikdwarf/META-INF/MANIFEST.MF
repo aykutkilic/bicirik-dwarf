@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Bicirikdwarf
+Bundle-SymbolicName: com.bicirikdwarf
+Bundle-Version: 1.0.0.qualifier
+Export-Package: com.bicirikdwarf.dwarf,
+ com.bicirikdwarf.elf,
+ com.bicirikdwarf.utils
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
