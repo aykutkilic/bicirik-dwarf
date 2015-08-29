@@ -212,14 +212,9 @@ public class Dwarf32Context {
 
 		case DW_FORM_exprloc: {
 			long size = Leb128.getULEB128(buffer);
-			byte bytes[] = new byte[(int) size];
-			StringBuilder newValue = new StringBuilder();
-			for (int z = 0; z < size; z++) {
-				bytes[z] = (byte) (buffer.get() & 0xff);
-				newValue.append((bytes[z] & 0xFF) + ", ");
-			}
-			return newValue.toString();
+			return ElfUtils.getByteBuffer(buffer, (int) size);
 		}
+		
 		case DW_FORM_sdata:
 			return Leb128.getSLEB128(buffer);
 		case DW_FORM_udata:

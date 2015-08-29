@@ -141,6 +141,7 @@ class Variable extends Die {
 	String name
 	Integer declFile
 	Integer declLine
+	Integer location
 	refers Type ^type
 	Boolean external
 }

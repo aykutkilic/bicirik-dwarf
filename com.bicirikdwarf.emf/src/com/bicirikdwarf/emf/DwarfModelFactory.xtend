@@ -34,6 +34,8 @@ import org.eclipse.emf.ecore.EObject
 import com.bicirikdwarf.dwarf.Dwarf32Context
 import com.bicirikdwarf.emf.dwarf.CompositeType
 import java.util.Iterator
+import com.bicirikdwarf.dwarf.DwOpType
+import java.nio.ByteBuffer
 
 public class DwarfModelFactory {
 	Map<Integer, Die> dies;
@@ -334,7 +336,8 @@ public class DwarfModelFactory {
 		variable.declLine = die.declLine
 		variable.type = die.createProxyForType
 		variable.external = die.external
-
+		variable.location = die.location
+		
 		variable
 	}
 
@@ -390,6 +393,17 @@ public class DwarfModelFactory {
 		boxToInteger(die.getAttribValue(DwAtType.DW_AT_high_pc))
 	}
 
+	private def location( DebugInfoEntry die ) {
+		var buffer = die.getAttribValue(DwAtType.DW_AT_location) as ByteBuffer
+		
+		if(buffer == null || buffer.remaining == 0) return null
+		var opType = DwOpType::byValue(buffer.get())
+		switch(opType) {
+			case DwOpType.DW_OP_addr: return buffer.int
+			default: return null
+		}
+	}
+	
 	private def lowerBound(DebugInfoEntry die) {
 		boxToInteger(die.getAttribValue(DwAtType.DW_AT_lower_bound))
 	}

@@ -121,13 +121,7 @@ public class Elf32Context {
 	}
 
 	public ByteBuffer getSectionBuffer(Shdr shdr) {
-		int oldPosition = elfBuffer.position();
-		elfBuffer.position((int) shdr.sh_offset);
-		ByteBuffer result = elfBuffer.slice();
-		result.order(elfBuffer.order());
-		result.limit((int) shdr.sh_size);
-		elfBuffer.position(oldPosition);
-		return result;
+		return ElfUtils.cloneSection(elfBuffer, (int) shdr.sh_offset, (int) shdr.sh_size);
 	}
 
 	public ByteBuffer getSectionBufferByName(String sectionName)

@@ -201,6 +201,15 @@ public enum DwOpType {
 	DwOpType(byte value) {
 		this.value = value;
 	}
+	
+	public static DwOpType byValue(int value) {
+		for (DwOpType a : DwOpType.values()) {
+			if (a.value == value)
+				return a;
+		}
+
+		return null;
+	}
 
 	public byte value() {
 		return value;

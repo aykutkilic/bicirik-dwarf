@@ -56,4 +56,28 @@ public class ElfUtils {
 
 		return result.toString();
 	}
+
+	/**
+	 * Please note that this moved the source buffer forward.
+	 * @param source
+	 * @param count
+	 * @return
+	 */
+	public static ByteBuffer getByteBuffer( ByteBuffer source, int count ) {
+		byte [] data = new byte[count];
+		source.get(data);
+		ByteBuffer result = ByteBuffer.wrap(data);
+		result.order(source.order());
+		return result;
+	}
+	
+	public static ByteBuffer cloneSection( ByteBuffer source, int start, int count ) {
+		int oldPosition = source.position();
+		source.position(start);
+		ByteBuffer result = source.slice();
+		result.order(source.order());
+		result.limit(count);
+		source.position(oldPosition);
+		return result;
+	}
 }
