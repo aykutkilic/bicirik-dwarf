@@ -51,6 +51,9 @@ public class DebugInfoEntry {
 		for (AbbrevEntry entry : abbrev.entries) {
 			Object value = cu.getAttribValue(buffer, entry.form);
 
+			if(value == null)
+				throw new IllegalArgumentException();
+			
 			result.attribs.put(entry.at, value);
 
 			if (debugging())

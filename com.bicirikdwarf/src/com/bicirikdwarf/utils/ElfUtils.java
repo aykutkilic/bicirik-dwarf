@@ -58,20 +58,21 @@ public class ElfUtils {
 	}
 
 	/**
-	 * Please note that this moved the source buffer forward.
+	 * Please note that this moves the source buffer forward.
+	 * 
 	 * @param source
 	 * @param count
 	 * @return
 	 */
-	public static ByteBuffer getByteBuffer( ByteBuffer source, int count ) {
-		byte [] data = new byte[count];
+	public static ByteBuffer getByteBuffer(ByteBuffer source, int count) {
+		byte[] data = new byte[count];
 		source.get(data);
 		ByteBuffer result = ByteBuffer.wrap(data);
 		result.order(source.order());
 		return result;
 	}
-	
-	public static ByteBuffer cloneSection( ByteBuffer source, int start, int count ) {
+
+	public static ByteBuffer cloneSection(ByteBuffer source, int start, int count) {
 		int oldPosition = source.position();
 		source.position(start);
 		ByteBuffer result = source.slice();
@@ -79,5 +80,20 @@ public class ElfUtils {
 		result.limit(count);
 		source.position(oldPosition);
 		return result;
+	}
+
+	public static Long toLong(ByteBuffer buffer) {
+		switch (buffer.remaining()) {
+		case 1:
+			return (long)Unsigned.getU8(buffer);
+		case 2:
+			return (long)Unsigned.getU16(buffer);
+		case 3:
+			return (long)Unsigned.getU24(buffer);
+		case 4:
+			return (long)Unsigned.getU32(buffer);
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 }

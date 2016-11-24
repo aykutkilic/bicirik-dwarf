@@ -36,6 +36,7 @@ import com.bicirikdwarf.emf.dwarf.CompositeType
 import java.util.Iterator
 import com.bicirikdwarf.dwarf.DwOpType
 import java.nio.ByteBuffer
+import com.bicirikdwarf.utils.ElfUtils
 
 public class DwarfModelFactory {
 	Map<Integer, Die> dies;
@@ -51,7 +52,7 @@ public class DwarfModelFactory {
 		dies = new HashMap();
 		model = DwarfFactory::eINSTANCE.createDwarfModel
 	}
-	
+
 	private def processContext(Dwarf32Context dwarfContext) {
 		dwarfContext.compilationUnits.forEach[createDie(it.compileUnit)]
 		resolveReferences
@@ -129,28 +130,28 @@ public class DwarfModelFactory {
 
 				if (crossRef.eIsProxy) {
 					var proxyUri = (crossRef as InternalEObject).eProxyURI.toString
-					if( !proxyUri.empty) {
+					if (!proxyUri.empty) {
 						var address = Integer.parseInt(proxyUri)
 						var resolved = dies.get(address)
 						if(resolved == null) throw new Exception
-						element.eSet(feature, resolved)	
+						element.eSet(feature, resolved)
 					}
 				}
 			}
 		}
 	}
-	
+
 	private def resolveCompositeTypeTypedefs() {
 		val compositeTypes = model.eAllContents.filter(CompositeType)
 		val typedefs = model.eAllContents.filter(Typedef).filter[it.type instanceof CompositeType].toList
-		
-		compositeTypes.forEach[ c | c.typedef = typedefs.iterator.filter[it.type == c].onlyIfOne ]
+
+		compositeTypes.forEach[c|c.typedef = typedefs.iterator.filter[it.type == c].onlyIfOne]
 	}
-	
+
 	def <E> E onlyIfOne(Iterator<E> i) {
-		if( !i.hasNext ) return null;
+		if(!i.hasNext) return null;
 		var result = i.next;
-		if( i.hasNext ) return null;
+		if(i.hasNext) return null;
 		result
 	}
 
@@ -276,7 +277,7 @@ public class DwarfModelFactory {
 		var children = die.children.map[it.createDie]
 		subprogram.parameters.addAll(children.filter(FormalParameter))
 		subprogram.localVariables.addAll(children.filter(Variable))
-		
+
 		subprogram
 	}
 
@@ -319,7 +320,7 @@ public class DwarfModelFactory {
 		unionType.declLine = die.declLine
 
 		unionType.members.addAll(die.children.map[it.createDie as Member])
-		
+
 		unionType
 	}
 
@@ -337,7 +338,7 @@ public class DwarfModelFactory {
 		variable.type = die.createProxyForType
 		variable.external = die.external
 		variable.location = die.location
-		
+
 		variable
 	}
 
@@ -358,7 +359,11 @@ public class DwarfModelFactory {
 	}
 
 	private def dataMemberLocation(DebugInfoEntry die) {
-		boxToInteger(die.getAttribValue(DwAtType.DW_AT_data_member_location))
+		val buffer = die.getAttribValue(DwAtType.DW_AT_data_member_location)
+		if (buffer === null)
+			return 0l;
+
+		ElfUtils::toLong(buffer as ByteBuffer)
 	}
 
 	private def declaration(DebugInfoEntry die) {
@@ -381,10 +386,9 @@ public class DwarfModelFactory {
 		boxToBoolean(die.getAttribValue(DwAtType.DW_AT_external))
 	}
 
-	//private def frameBase(DebugInfoEntry die) {
-	//	throw new Exception
-	//}
-
+	// private def frameBase(DebugInfoEntry die) {
+	// throw new Exception
+	// }
 	private def gnuAllCallSites(DebugInfoEntry die) {
 		boxToInteger(die.getAttribValue(DwAtType.DW_AT_GNU_all_call_sites))
 	}
@@ -393,21 +397,20 @@ public class DwarfModelFactory {
 		boxToInteger(die.getAttribValue(DwAtType.DW_AT_high_pc))
 	}
 
-	private def location( DebugInfoEntry die ) {
+	private def location(DebugInfoEntry die) {
 		var attrib = die.getAttribValue(DwAtType.DW_AT_location) //
-		if (attrib instanceof byte[])							 // ugly-fix (just take first byte if byte-array is returned)
-			return boxToInteger(attrib)							 //
-
+		if (attrib instanceof byte[]) // ugly-fix (just take first byte if byte-array is returned)
+			return boxToInteger(attrib) //
 		var buffer = die.getAttribValue(DwAtType.DW_AT_location) as ByteBuffer
-		
+
 		if(buffer == null || buffer.remaining == 0) return null
 		var opType = DwOpType::byValue(buffer.get())
-		switch(opType) {
+		switch (opType) {
 			case DwOpType.DW_OP_addr: return buffer.int
 			default: return null
 		}
 	}
-	
+
 	private def lowerBound(DebugInfoEntry die) {
 		boxToInteger(die.getAttribValue(DwAtType.DW_AT_lower_bound))
 	}
@@ -453,7 +456,6 @@ public class DwarfModelFactory {
 			Short: new Integer(object as Short)
 			Integer: object as Integer
 			String: Integer.parseInt(object as String)
-			byte[]: boxToInteger((object as byte[]).get(0))		// ugly-fix (just take first byte if byte-array is returned)
 			default: object as Integer
 		}
 	}

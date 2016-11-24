@@ -5,6 +5,7 @@ import static com.bicirikdwarf.utils.ElfUtils.log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.security.InvalidParameterException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ public class Dwarf32Context {
 	Map<Integer, Abbrev> abbrevs;
 	Map<Integer, Map<Integer, Abbrev>> abbrevSequences;
 	private Map<Integer, CompilationUnit> compilationUnits;
-	
+
 	Map<Integer, DebugInfoEntry> dies;
 
 	ByteBuffer debug_str_buffer;
@@ -58,8 +59,7 @@ public class Dwarf32Context {
 			if (abbrev.number == 0) {
 				if (abbrevSequence != null) {
 					if (debugging())
-						log("Creating abbrev sequence entry at 0x"
-								+ Integer.toHexString(sequenceOffset));
+						log("Creating abbrev sequence entry at 0x" + Integer.toHexString(sequenceOffset));
 					abbrevSequences.put(sequenceOffset, abbrevSequence);
 					sequenceOffset = buffer.position();
 					abbrevSequence = null;
@@ -70,10 +70,8 @@ public class Dwarf32Context {
 				abbrevSequence = new HashMap<>();
 
 			if (abbrevSequence.containsKey(abbrev.number))
-				throw new InvalidParameterException(
-						"Overlapping abbrev number " + abbrev.number
-								+ "for sequence starting at "
-								+ Integer.toHexString(sequenceOffset));
+				throw new InvalidParameterException("Overlapping abbrev number " + abbrev.number
+						+ "for sequence starting at " + Integer.toHexString(sequenceOffset));
 
 			abbrevSequence.put(abbrev.number, abbrev);
 			abbrevs.put(offset, abbrev);
@@ -98,18 +96,18 @@ public class Dwarf32Context {
 		debug_str_buffer.position(offset);
 		return ElfUtils.getNTString(debug_str_buffer);
 	}
-	
-	public DebugInfoEntry getDieByAddress(int address) { 
-		if(dies.containsKey(address)) 
+
+	public DebugInfoEntry getDieByAddress(int address) {
+		if (dies.containsKey(address))
 			return dies.get(address);
-		
+
 		return null;
 	}
-	
+
 	public void registerDie(DebugInfoEntry die) {
 		int address = die.getAddress();
-		
-		if(dies.containsKey(address))
+
+		if (dies.containsKey(address))
 			throw new InvalidParameterException("DIE at address 0x" + Integer.toHexString(address) + " already exists");
 
 		dies.put(address, die);
@@ -118,9 +116,8 @@ public class Dwarf32Context {
 	public Collection<CompilationUnit> getCompilationUnits() {
 		return compilationUnits.values();
 	}
-	
-	public Object getAttributeValue(DwFormType form, CompilationUnit cu,
-			ByteBuffer buffer) {
+
+	public Object getAttributeValue(DwFormType form, CompilationUnit cu, ByteBuffer buffer) {
 		switch (form) {
 		case DW_FORM_string:
 			return ElfUtils.getNTString(buffer);
@@ -163,43 +160,28 @@ public class Dwarf32Context {
 		}
 
 		case DW_FORM_block: {
-			long size = Leb128.getULEB128(buffer);
-			byte bytes[] = new byte[(int) size];
-			for (int z = 0; z < size; z++) {
-				bytes[z] = (byte) (buffer.get() & 0xff);
-			}
-			return bytes;
+			int size = (int) Leb128.getULEB128(buffer);
+			return ElfUtils.getByteBuffer(buffer, size);
 		}
 
 		case DW_FORM_block1: {
 			int size = buffer.get() & 0xff;
-			byte bytes[] = new byte[size];
-			for (int z = 0; z < size; z++) {
-				bytes[z] = (byte) (buffer.get() & 0xff);
-			}
-			return bytes;
+			return ElfUtils.getByteBuffer(buffer, size);
 		}
 
 		case DW_FORM_block2: {
 			short size = buffer.getShort();
-			byte bytes[] = new byte[size];
-			for (int z = 0; z < size; z++) {
-				bytes[z] = (byte) (buffer.get() & 0xff);
-			}
-			return bytes;
+			return ElfUtils.getByteBuffer(buffer, size);
 		}
 
 		case DW_FORM_block4: {
 			int size = buffer.getInt();
-			byte bytes[] = new byte[size];
-			for (int z = 0; z < size; z++) {
-				bytes[z] = (byte) (buffer.get() & 0xff);
-			}
-			return bytes;
+			return ElfUtils.getByteBuffer(buffer, size);
 		}
 
 		case DW_FORM_ref_udata:
 			return Leb128.getULEB128(buffer);
+
 		case DW_FORM_flag:
 			return buffer.get();
 
@@ -214,15 +196,15 @@ public class Dwarf32Context {
 			long size = Leb128.getULEB128(buffer);
 			return ElfUtils.getByteBuffer(buffer, (int) size);
 		}
-		
+
 		case DW_FORM_sdata:
 			return Leb128.getSLEB128(buffer);
+
 		case DW_FORM_udata:
 			return Leb128.getULEB128(buffer);
 
 		default:
-			throw new InvalidParameterException("Unsupport DW_FORM_? = 0x"
-					+ Integer.toHexString(form.value()));
+			throw new InvalidParameterException("Unsupport DW_FORM_? = 0x" + Integer.toHexString(form.value()));
 		}
 	}
 }
