@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %pluginName
+Bundle-Name: com.bicirikdwarf.emf
 Bundle-SymbolicName: com.bicirikdwarf.emf;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.1.2.qualifier
 Bundle-ClassPath: .
-Bundle-Vendor: %providerName
+Bundle-Vendor: Aykut Kilic
 Bundle-Localization: plugin
 Export-Package: com.bicirikdwarf.emf,
  com.bicirikdwarf.emf.dwarf,
@@ -14,6 +14,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.emf.ecore.xcore.lib,
- com.bicirikdwarf;bundle-version="1.0.0"
+ com.bicirikdwarf
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

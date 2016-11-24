@@ -394,6 +394,10 @@ public class DwarfModelFactory {
 	}
 
 	private def location( DebugInfoEntry die ) {
+		var attrib = die.getAttribValue(DwAtType.DW_AT_location) //
+		if (attrib instanceof byte[])							 // ugly-fix (just take first byte if byte-array is returned)
+			return boxToInteger(attrib)							 //
+
 		var buffer = die.getAttribValue(DwAtType.DW_AT_location) as ByteBuffer
 		
 		if(buffer == null || buffer.remaining == 0) return null
@@ -431,7 +435,7 @@ public class DwarfModelFactory {
 	private def createProxyForType(DebugInfoEntry die) {
 		var address = die.getAttribValue(DwAtType.DW_AT_type) as Integer
 		var typeProxy = DwarfFactory::eINSTANCE.createBaseType as InternalEObject
-		typeProxy.eSetProxyURI(URI::createFileURI('''Â«addressÂ»'''))
+		typeProxy.eSetProxyURI(URI::createFileURI('''«address»'''))
 		return typeProxy as Type
 	}
 
@@ -442,15 +446,15 @@ public class DwarfModelFactory {
 		intForm != 0
 	}
 
-	private def boxToInteger(Object object) {
+	private def Integer boxToInteger(Object object) {
 		if(object == null) return null
 		switch (object) {
 			Byte: new Integer(object as Byte)
 			Short: new Integer(object as Short)
 			Integer: object as Integer
 			String: Integer.parseInt(object as String)
+			byte[]: boxToInteger((object as byte[]).get(0))		// ugly-fix (just take first byte if byte-array is returned)
 			default: object as Integer
 		}
 	}
-
 }
