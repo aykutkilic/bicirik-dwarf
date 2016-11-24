@@ -5,7 +5,6 @@ import static com.bicirikdwarf.utils.ElfUtils.log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.security.InvalidParameterException;
 import java.util.Collection;
 import java.util.HashMap;

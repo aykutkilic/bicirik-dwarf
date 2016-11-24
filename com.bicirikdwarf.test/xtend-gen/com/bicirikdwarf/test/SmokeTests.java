@@ -37,20 +37,23 @@ public class SmokeTests {
       final DwarfModel model = DwarfModelFactory.createModel(dwarf);
       TreeIterator<EObject> _eAllContents = model.eAllContents();
       Iterator<Variable> _filter = Iterators.<Variable>filter(_eAllContents, Variable.class);
-      final Procedure1<Variable> _function = (Variable it) -> {
-        StringConcatenation _builder = new StringConcatenation();
-        String _name = it.getName();
-        _builder.append(_name, "");
-        _builder.append(" @ ");
-        String _xifexpression = null;
-        Integer _location = it.getLocation();
-        boolean _notEquals = (!Objects.equal(_location, null));
-        if (_notEquals) {
-          Integer _location_1 = it.getLocation();
-          _xifexpression = Integer.toHexString((_location_1).intValue());
+      final Procedure1<Variable> _function = new Procedure1<Variable>() {
+        @Override
+        public void apply(final Variable it) {
+          StringConcatenation _builder = new StringConcatenation();
+          String _name = it.getName();
+          _builder.append(_name, "");
+          _builder.append(" @ ");
+          String _xifexpression = null;
+          Integer _location = it.getLocation();
+          boolean _notEquals = (!Objects.equal(_location, null));
+          if (_notEquals) {
+            Integer _location_1 = it.getLocation();
+            _xifexpression = Integer.toHexString((_location_1).intValue());
+          }
+          _builder.append(_xifexpression, "");
+          InputOutput.<String>println(_builder.toString());
         }
-        _builder.append(_xifexpression, "");
-        InputOutput.<String>println(_builder.toString());
       };
       IteratorExtensions.<Variable>forEach(_filter, _function);
     } catch (Throwable _e) {
