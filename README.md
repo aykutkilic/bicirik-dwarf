@@ -44,7 +44,7 @@ Here's a more detailed example:
 	def dispatch String dumpType(BaseType baseType) '''«baseType.name»<«baseType.encoding ?: 'void'»>'''
 	def dispatch String dumpType(Typedef typedef) '''«typedef.name»'''
 	def dispatch String dumpType(ArrayType arrayType) '''«arrayType.type.dumpType»«arrayType.subranges.map[it.dumpType].join»'''
-	def dispatch String dumpType(SubrangeType subRange) '''[«subRange.upperBound»]'''
+	def dispatch String dumpType(SubrangeType subRange) '''[«subRange.upperBound+1»]'''
 	def dispatch String dumpType(PointerType ptr) '''«ptr.type.dumpType» *'''
 	def dispatch String dumpType(ConstType const) '''const «const.type.dumpType»'''
 	def dispatch String dumpType(VolatileType vol) '''volatile «vol.type.dumpType»'''
