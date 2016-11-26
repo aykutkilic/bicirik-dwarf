@@ -5,6 +5,7 @@ import static com.bicirikdwarf.utils.ElfUtils.log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.security.InvalidParameterException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -160,22 +161,22 @@ public class Dwarf32Context {
 
 		case DW_FORM_block: {
 			int size = (int) Leb128.getULEB128(buffer);
-			return ElfUtils.getLEArray(buffer, size);
+			return ElfUtils.getByteBuffer(buffer, size, ByteOrder.LITTLE_ENDIAN);
 		}
 
 		case DW_FORM_block1: {
 			int size = buffer.get() & 0xff;
-			return ElfUtils.getLEArray(buffer, size);
+			return ElfUtils.getByteBuffer(buffer, size, ByteOrder.LITTLE_ENDIAN);
 		}
 
 		case DW_FORM_block2: {
 			short size = buffer.getShort();
-			return ElfUtils.getLEArray(buffer, size);
+			return ElfUtils.getByteBuffer(buffer, size, ByteOrder.LITTLE_ENDIAN);
 		}
 
 		case DW_FORM_block4: {
 			int size = buffer.getInt();
-			return ElfUtils.getLEArray(buffer, size);
+			return ElfUtils.getByteBuffer(buffer, size, ByteOrder.LITTLE_ENDIAN);
 		}
 
 		case DW_FORM_ref_udata:
@@ -193,7 +194,7 @@ public class Dwarf32Context {
 
 		case DW_FORM_exprloc: {
 			long size = Leb128.getULEB128(buffer);
-			return ElfUtils.getLEArray(buffer, (int) size);
+			return ElfUtils.getByteBuffer(buffer, (int) size, ByteOrder.LITTLE_ENDIAN);
 		}
 
 		case DW_FORM_sdata:

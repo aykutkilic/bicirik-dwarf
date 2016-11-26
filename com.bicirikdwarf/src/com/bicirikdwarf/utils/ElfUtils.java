@@ -70,6 +70,14 @@ public class ElfUtils {
 		return result;
 	}
 
+	public static ByteBuffer getByteBuffer(ByteBuffer source, int count, ByteOrder order) {
+		byte[] data = new byte[count];
+		source.get(data);
+		ByteBuffer result = ByteBuffer.wrap(data);
+		result.order(order);
+		return result;
+	}
+
 	public static ByteBuffer cloneSection(ByteBuffer source, int start, int count) {
 		int oldPosition = source.position();
 		source.position(start);
@@ -80,52 +88,25 @@ public class ElfUtils {
 		return result;
 	}
 
-	/**
-	 * @return Little endian byte array
-	 */
-	public static byte[] getLEArray(ByteBuffer buffer, int count) {
+	/*public static byte[] getArray(ByteBuffer buffer, int count) {
 		byte[] result = new byte[count];
 
-		for (int i = 0; i < count; i++) {
-			byte val = buffer.get();
-
-			if (buffer.order() == ByteOrder.BIG_ENDIAN)
-				result[count - 1 - i] = val;
-			else
-				result[i] = val;
-		}
+		for (int i = 0; i < count; i++)
+			result[i] = buffer.get();
 
 		return result;
-	}
+	}*/
 
-	public static Integer toInteger(byte[] array) {
-		Integer result = 0;
-
-		for (int i = 0; i < array.length; i++)
-			result = (result << 8) | array[i];
-
-		return result;
-	}
-
-	public static Long toLong(byte[] array) {
-		Long result = 0l;
-
-		for (int i = 0; i < array.length; i++)
-			result = (result << 8) | array[i];
-
-		return result;
-	}
-
-	public static Long toLong(ByteBuffer buffer) {
+	public static int toInteger(ByteBuffer buffer) {
 		switch (buffer.remaining()) {
 		case 1:
-			return (long) Unsigned.getU8(buffer);
+			return (int) Unsigned.getU8(buffer);
 		case 2:
-			return (long) Unsigned.getU16(buffer);
+			return (int) Unsigned.getU16(buffer);
 		case 3:
-			return (long) Unsigned.getU24(buffer);
+			return (int) Unsigned.getU24(buffer);
 		case 4:
-			return (long) Unsigned.getU32(buffer);
+			return (int) Unsigned.getU32(buffer);
 		default:
 			throw new IllegalArgumentException();
 		}

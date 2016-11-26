@@ -365,7 +365,7 @@ public class DwarfModelFactory {
 
 		switch memberLocation {
 			Integer: new Long(memberLocation)
-			byte[]: ElfUtils::toLong(memberLocation)
+			ByteBuffer: new Long(evalLocationExpr(memberLocation))
 		}
 	}
 
@@ -401,17 +401,8 @@ public class DwarfModelFactory {
 	}
 
 	private def location(DebugInfoEntry die) {
-		var attrib = die.getAttribValue(DwAtType.DW_AT_location) //
-		if (attrib instanceof byte[]) // ugly-fix (just take first byte if byte-array is returned)
-			return boxToInteger(attrib) //
 		var buffer = die.getAttribValue(DwAtType.DW_AT_location) as ByteBuffer
-
-		if(buffer == null || buffer.remaining == 0) return null
-		var opType = DwOpType::byValue(buffer.get())
-		switch (opType) {
-			case DwOpType.DW_OP_addr: return buffer.int
-			default: return null
-		}
+		evalLocationExpr(buffer)
 	}
 
 	private def lowerBound(DebugInfoEntry die) {
@@ -445,6 +436,16 @@ public class DwarfModelFactory {
 		return typeProxy as Type
 	}
 
+	private def evalLocationExpr(ByteBuffer buffer) {
+		if(buffer == null || buffer.remaining == 0) return null
+		var opType = DwOpType::byValue(buffer.get())
+		switch (opType) {
+			case DwOpType.DW_OP_plus_uconst: return ElfUtils::toInteger(buffer)
+			case DwOpType.DW_OP_addr: return ElfUtils::toInteger(buffer)
+			default: return null
+		}
+	}
+
 	private def boxToBoolean(Object object) {
 		var intForm = boxToInteger(object)
 		if(object == null) return false
@@ -459,7 +460,7 @@ public class DwarfModelFactory {
 			Short: new Integer(object as Short)
 			Integer: object as Integer
 			String: Integer.parseInt(object as String)
-			byte[]: ElfUtils::toInteger(object)
+			ByteBuffer: ElfUtils::toInteger(object)
 			default: object as Integer
 		}
 	}
