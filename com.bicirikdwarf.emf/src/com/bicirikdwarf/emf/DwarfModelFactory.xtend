@@ -358,12 +358,15 @@ public class DwarfModelFactory {
 		boxToInteger(die.getAttribValue(DwAtType.DW_AT_const_value))
 	}
 
-	private def dataMemberLocation(DebugInfoEntry die) {
-		val buffer = die.getAttribValue(DwAtType.DW_AT_data_member_location)
-		if (buffer === null)
+	private def Long dataMemberLocation(DebugInfoEntry die) {
+		val memberLocation = die.getAttribValue(DwAtType.DW_AT_data_member_location)
+		if (memberLocation === null)
 			return 0l;
 
-		ElfUtils::toLong(buffer as ByteBuffer)
+		switch memberLocation {
+			Integer: new Long(memberLocation)
+			byte[]: ElfUtils::toLong(memberLocation)
+		}
 	}
 
 	private def declaration(DebugInfoEntry die) {
@@ -438,7 +441,7 @@ public class DwarfModelFactory {
 	private def createProxyForType(DebugInfoEntry die) {
 		var address = die.getAttribValue(DwAtType.DW_AT_type) as Integer
 		var typeProxy = DwarfFactory::eINSTANCE.createBaseType as InternalEObject
-		typeProxy.eSetProxyURI(URI::createFileURI('''«address»'''))
+		typeProxy.eSetProxyURI(URI::createFileURI('''Â«addressÂ»'''))
 		return typeProxy as Type
 	}
 
@@ -456,6 +459,7 @@ public class DwarfModelFactory {
 			Short: new Integer(object as Short)
 			Integer: object as Integer
 			String: Integer.parseInt(object as String)
+			byte[]: ElfUtils::toInteger(object)
 			default: object as Integer
 		}
 	}

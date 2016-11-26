@@ -30,7 +30,7 @@ public class DebugInfoEntry {
 	}
 
 	public static DebugInfoEntry parse(ByteBuffer buffer, CompilationUnit cu, DebugInfoEntry parent) {
-		ElfUtils.dumpNextNBytes(buffer, 8);
+		ElfUtils.dumpNextNBytes(buffer, 20);
 		DebugInfoEntry result = new DebugInfoEntry(cu, parent);
 
 		int address = buffer.position();

@@ -160,22 +160,22 @@ public class Dwarf32Context {
 
 		case DW_FORM_block: {
 			int size = (int) Leb128.getULEB128(buffer);
-			return ElfUtils.getByteBuffer(buffer, size);
+			return ElfUtils.getLEArray(buffer, size);
 		}
 
 		case DW_FORM_block1: {
 			int size = buffer.get() & 0xff;
-			return ElfUtils.getByteBuffer(buffer, size);
+			return ElfUtils.getLEArray(buffer, size);
 		}
 
 		case DW_FORM_block2: {
 			short size = buffer.getShort();
-			return ElfUtils.getByteBuffer(buffer, size);
+			return ElfUtils.getLEArray(buffer, size);
 		}
 
 		case DW_FORM_block4: {
 			int size = buffer.getInt();
-			return ElfUtils.getByteBuffer(buffer, size);
+			return ElfUtils.getLEArray(buffer, size);
 		}
 
 		case DW_FORM_ref_udata:
@@ -193,7 +193,7 @@ public class Dwarf32Context {
 
 		case DW_FORM_exprloc: {
 			long size = Leb128.getULEB128(buffer);
-			return ElfUtils.getByteBuffer(buffer, (int) size);
+			return ElfUtils.getLEArray(buffer, (int) size);
 		}
 
 		case DW_FORM_sdata:

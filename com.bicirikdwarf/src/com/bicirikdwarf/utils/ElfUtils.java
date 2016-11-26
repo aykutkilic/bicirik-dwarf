@@ -2,6 +2,7 @@ package com.bicirikdwarf.utils;
 
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class ElfUtils {
 
@@ -48,10 +49,7 @@ public class ElfUtils {
 		StringBuilder result = new StringBuilder();
 
 		for (byte b : data) {
-			String hex = Integer.toHexString(b);
-			if (hex.length() == 1)
-				hex = "0" + hex;
-			result.append(hex);
+			result.append(String.format("%02X", b));
 		}
 
 		return result.toString();
@@ -82,16 +80,52 @@ public class ElfUtils {
 		return result;
 	}
 
+	/**
+	 * @return Little endian byte array
+	 */
+	public static byte[] getLEArray(ByteBuffer buffer, int count) {
+		byte[] result = new byte[count];
+
+		for (int i = 0; i < count; i++) {
+			byte val = buffer.get();
+
+			if (buffer.order() == ByteOrder.BIG_ENDIAN)
+				result[count - 1 - i] = val;
+			else
+				result[i] = val;
+		}
+
+		return result;
+	}
+
+	public static Integer toInteger(byte[] array) {
+		Integer result = 0;
+
+		for (int i = 0; i < array.length; i++)
+			result = (result << 8) | array[i];
+
+		return result;
+	}
+
+	public static Long toLong(byte[] array) {
+		Long result = 0l;
+
+		for (int i = 0; i < array.length; i++)
+			result = (result << 8) | array[i];
+
+		return result;
+	}
+
 	public static Long toLong(ByteBuffer buffer) {
 		switch (buffer.remaining()) {
 		case 1:
-			return (long)Unsigned.getU8(buffer);
+			return (long) Unsigned.getU8(buffer);
 		case 2:
-			return (long)Unsigned.getU16(buffer);
+			return (long) Unsigned.getU16(buffer);
 		case 3:
-			return (long)Unsigned.getU24(buffer);
+			return (long) Unsigned.getU24(buffer);
 		case 4:
-			return (long)Unsigned.getU32(buffer);
+			return (long) Unsigned.getU32(buffer);
 		default:
 			throw new IllegalArgumentException();
 		}
