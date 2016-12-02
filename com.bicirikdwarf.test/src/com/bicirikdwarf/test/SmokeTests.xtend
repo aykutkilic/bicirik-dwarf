@@ -18,84 +18,77 @@ import com.bicirikdwarf.emf.dwarf.Typedef
 import com.bicirikdwarf.emf.dwarf.UnionType
 import com.bicirikdwarf.emf.dwarf.Variable
 import com.bicirikdwarf.emf.dwarf.VolatileType
-import com.bicirikdwarf.utils.ElfUtils
-import java.io.File
-import java.io.PrintWriter
+import com.bicirikdwarf.test.util.Util
 import java.io.RandomAccessFile
 import java.nio.ByteOrder
 import java.nio.channels.FileChannel
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameter
+import org.junit.runners.Parameterized.Parameters
 
-import static com.bicirikdwarf.utils.ElfUtils.*
-
+@RunWith(Parameterized)
 class SmokeTests {
-	@Test
-	def void MPC5643L_core0() {
-		smokeTestElfFile(
-			'elf-files/MPC5643L_core0.elf',
-			'log/MPC5643L_core0.log'
-		)
+	@Parameters(name = "{0}")
+	def static Iterable<? extends Object> data() {
+		Util::collectElfFiles.map[it.toString].toList
 	}
 
-	def smokeTestElfFile(String elfFilePath, String logFilePath) {
-		val elfFile = new File(elfFilePath)
-		val out = new PrintWriter(logFilePath)
+	@Parameter
+	public var String elfFile
 
+	@Test
+	def void smokeTest() {
 		val fileChannel = new RandomAccessFile(elfFile, 'r').getChannel();
 		val buffer = fileChannel.map(FileChannel.MapMode::READ_ONLY, 0, fileChannel.size);
 
 		buffer.order(ByteOrder.LITTLE_ENDIAN)
 
-		ElfUtils::debugLog = out
-		try {
-			val elf = new Elf32Context(buffer)
-			val dwarf = new Dwarf32Context(elf)
-			elf.toString
-			dwarf.toString
+		var elf = new Elf32Context(buffer)
+		var dwarf = new Dwarf32Context(elf)
+		val model = DwarfModelFactory::createModel(dwarf)
 
-			val model = DwarfModelFactory::createModel(dwarf)
-			model.eAllContents.filter(Variable).forEach [
-				out.println('''Â«it.nameÂ» @ Â«if(it.location!=null) Integer::toHexString(it.location)Â»''')
-			]
-			model.eAllContents.filter(StructureType).forEach[out.println(it.dumpStruct.toString)]
-		} finally {
-			out.close
-		}
+		model.eAllContents.filter(Variable).forEach [
+			println('''«it.name» @ «if(it.location!=null) Integer::toHexString(it.location)»''')
+		]
+
+		model.eAllContents.filter(StructureType).forEach[println(it.dumpStruct.toString)]
 	}
 
 	def dumpStruct(CompositeType struct) '''
-		Â«switch(struct) {StructureType:'struct' UnionType:'union' default:'composite?'}Â» Â«struct.typedef?.nameÂ» {
-		    Â«FOR m : struct.membersÂ»
-		    	Â«m.type.dumpTypeÂ» Â«m.nameÂ»  @Â«m.dataMemberLocationÂ»
-		    Â«ENDFORÂ»
+		«switch(struct) {StructureType:'struct' UnionType:'union' default:'composite?'}» «struct.typedef?.name» {
+		    «FOR m : struct.members»
+		    	«m.type.dumpType» «m.name»  @«m.dataMemberLocation»
+		    «ENDFOR»
 		}
 	'''
 
 	def dispatch String dumpType(Type type) { type.toString }
 
-	def dispatch String dumpType(BaseType baseType) '''Â«baseType.nameÂ»<Â«baseType.encoding ?: 'void'Â»>'''
+	def dispatch String dumpType(BaseType baseType) '''«baseType.name»<«baseType.encoding ?: 'void'»>'''
 
-	def dispatch String dumpType(Typedef typedef) '''Â«typedef.nameÂ»'''
-
-	def dispatch String dumpType(
-		ArrayType arrayType) '''Â«arrayType.type.dumpTypeÂ»Â«arrayType.subranges.map[it.dumpType].joinÂ»'''
-
-	def dispatch String dumpType(SubrangeType subRange) '''[Â«subRange.upperBound+1Â»]'''
-
-	def dispatch String dumpType(PointerType ptr) '''Â«ptr.type.dumpTypeÂ» *'''
-
-	def dispatch String dumpType(ConstType const) '''const Â«const.type.dumpTypeÂ»'''
-
-	def dispatch String dumpType(VolatileType vol) '''volatile Â«vol.type.dumpTypeÂ»'''
-
-	def dispatch String dumpType(EnumerationType ^enum) '''enum Â«enum.nameÂ»'''
-
-	def dispatch String dumpType(StructureType struct) '''struct Â«struct.typedef?.nameÂ»'''
-
-	def dispatch String dumpType(UnionType union) '''union Â«union.typedef?.nameÂ»'''
+	def dispatch String dumpType(Typedef typedef) '''«typedef.name»'''
 
 	def dispatch String dumpType(
-		SubroutineType sub) '''(Â«sub.parameters.map[it.dump].join(',')Â») -> Â«sub.returnType.dumpTypeÂ»'''
+		ArrayType arrayType) '''«arrayType.type.dumpType»«arrayType.subranges.map[it.dumpType].join»'''
 
-	def String dump(FormalParameter param) '''Â«param.type.dumpTypeÂ» Â«param.nameÂ»'''
+	def dispatch String dumpType(SubrangeType subRange) '''[«subRange.upperBound»]'''
+
+	def dispatch String dumpType(PointerType ptr) '''«ptr.type.dumpType» *'''
+
+	def dispatch String dumpType(ConstType const) '''const «const.type.dumpType»'''
+
+	def dispatch String dumpType(VolatileType vol) '''volatile «vol.type.dumpType»'''
+
+	def dispatch String dumpType(EnumerationType ^enum) '''enum «enum.name»'''
+
+	def dispatch String dumpType(StructureType struct) '''struct «struct.typedef?.name»'''
+
+	def dispatch String dumpType(UnionType union) '''union «union.typedef?.name»'''
+
+	def dispatch String dumpType(
+		SubroutineType sub) '''(«sub.parameters.map[it.dump].join(',')») -> «sub.returnType.dumpType»'''
+
+	def String dump(FormalParameter param) '''«param.type.dumpType» «param.name»'''
 }

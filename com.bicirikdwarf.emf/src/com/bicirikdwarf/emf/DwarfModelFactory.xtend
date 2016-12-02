@@ -432,7 +432,7 @@ public class DwarfModelFactory {
 	private def createProxyForType(DebugInfoEntry die) {
 		var address = die.getAttribValue(DwAtType.DW_AT_type) as Integer
 		var typeProxy = DwarfFactory::eINSTANCE.createBaseType as InternalEObject
-		typeProxy.eSetProxyURI(URI::createFileURI('''Â«addressÂ»'''))
+		typeProxy.eSetProxyURI(URI::createFileURI('''«address»'''))
 		return typeProxy as Type
 	}
 
