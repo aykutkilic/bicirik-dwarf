@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<version>1.0.0-SNAPSHOT</version>
+	<groupId>com.bicirikdwarf.group</groupId>
+	<artifactId>parent</artifactId>
+	<packaging>pom</packaging>
+	<name>Bicirik Dwarf Lib</name>
+
+	<properties>
+		<tycho-version>0.26.0</tycho-version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<modules>
+		<module>com.bicirikdwarf</module>
+		<module>com.bicirikdwarf.emf</module>
+		<module>com.bicirikdwarf.test</module>
+	</modules>
+
+	<repositories>
+		<repository>
+			<id>eclipse-oxygen</id>
+			<url>http://download.eclipse.org/releases/oxygen</url>
+			<layout>p2</layout>
+		</repository>
+	</repositories>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
