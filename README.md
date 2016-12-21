@@ -1,5 +1,7 @@
 ![](http://www.meleklermekani.com/imagehosting/Aydin-Babaoglu-0-259.jpg)
 # bicirik-dwarf
+[![Build Status](https://travis-ci.org/aykutkilic/bicirik-dwarf.svg?branch=master)](https://travis-ci.org/aykutkilic/bicirik-dwarf)
+
 Java based Elf/Dwarf parser branched from peter-dwarf. [https://code.google.com/p/peter-dwarf/]
 
 The focus of this library is EMF integration. After parsing the .elf file you can use the objects for code generation or integrate into your DSL.
