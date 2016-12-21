@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Test
-Bundle-SymbolicName: com.bicirikdwarf.test
+Bundle-Name: Tests
+Bundle-SymbolicName: com.bicirikdwarf.tests
 Bundle-Version: 0.0.1.qualifier
 Bundle-Vendor: Aykut Kilic
 Fragment-Host: com.bicirikdwarf

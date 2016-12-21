@@ -1,4 +1,4 @@
-package com.bicirikdwarf.test.util
+package com.bicirikdwarf.tests.util
 
 import java.nio.file.Paths
 import java.nio.file.Files

@@ -1,4 +1,4 @@
-package com.bicirikdwarf.test
+package com.bicirikdwarf.tests
 
 import com.bicirikdwarf.dwarf.Dwarf32Context
 import com.bicirikdwarf.elf.Elf32Context
@@ -18,7 +18,7 @@ import com.bicirikdwarf.emf.dwarf.Typedef
 import com.bicirikdwarf.emf.dwarf.UnionType
 import com.bicirikdwarf.emf.dwarf.Variable
 import com.bicirikdwarf.emf.dwarf.VolatileType
-import com.bicirikdwarf.test.util.Util
+import com.bicirikdwarf.tests.util.Util
 import java.io.RandomAccessFile
 import java.nio.ByteOrder
 import java.nio.channels.FileChannel
