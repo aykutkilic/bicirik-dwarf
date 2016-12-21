@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
 
 	<version>0.0.1-SNAPSHOT</version>
-  <artifactId>com.bicirikdwarf.test</artifactId>
+  <artifactId>com.bicirikdwarf.tests</artifactId>
   <packaging>eclipse-test-plugin</packaging>
 	
 	<parent>
