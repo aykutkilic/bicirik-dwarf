@@ -9,6 +9,7 @@ public class Sym {
 	public byte st_info;
 	public byte st_other;
 	public short st_shndx;
+	public String symbol_name;
 
 	public void parse(ByteBuffer buffer) {
 		st_name = buffer.getInt();
