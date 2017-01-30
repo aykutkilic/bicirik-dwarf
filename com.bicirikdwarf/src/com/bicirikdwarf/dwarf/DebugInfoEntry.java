@@ -95,4 +95,8 @@ public class DebugInfoEntry {
 	public Object getAttribValue(DwAtType at) {
 		return attribs.get(at);
 	}
+
+	public Map<DwAtType, Object> getAttribs() {
+		return attribs;
+	}
 }
