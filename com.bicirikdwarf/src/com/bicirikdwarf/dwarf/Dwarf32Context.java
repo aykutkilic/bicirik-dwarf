@@ -38,8 +38,15 @@ public class Dwarf32Context {
 	}
 
 	private void init() throws IOException {
-		debug_str_buffer = elf.getSectionBufferByName(".debug_str");
-
+		try {
+			debug_str_buffer = elf.getSectionBufferByName(".debug_str");
+		} catch(InvalidParameterException ipex) {
+			/* e.g. in GHS compiler's .out files there's no section with name .debug_str.
+			 * In this case the values like variable or function names are represented
+			 * directly in the section .debug_info
+			 */
+			debug_str_buffer = null;
+		}
 		initDebugAbbrev();
 		initDebugInfo();
 	}
