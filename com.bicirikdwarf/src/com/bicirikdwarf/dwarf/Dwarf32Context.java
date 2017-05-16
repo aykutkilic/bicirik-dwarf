@@ -145,6 +145,9 @@ public class Dwarf32Context {
 			return buffer.getInt();
 		case DW_FORM_data8:
 			return buffer.getLong();
+			
+		case DW_FORM_ref_addr:
+			return buffer.getInt();
 
 		case DW_FORM_ref1: {
 			Byte data = buffer.get();
