@@ -5,16 +5,16 @@ import java.nio.ByteBuffer;
 import com.bicirikdwarf.utils.Unsigned;
 
 public class Shdr {
-	long sh_name; // section name - word
-	long sh_type; // SHT_... - word
-	long sh_flags; // SHF_... - word
-	long sh_addr; // virtual address - addr
-	long sh_offset; // file offset - off
-	long sh_size; // section size - word
-	long sh_link; // misc info - word
-	long sh_info; // misc info - word
-	long sh_addralign; // memory alignment - word
-	long sh_entsize; // entry size if table - word
+	public long sh_name; // section name - word
+	public long sh_type; // SHT_... - word
+	public long sh_flags; // SHF_... - word
+	public long sh_addr; // virtual address - addr
+	public long sh_offset; // file offset - off
+	public long sh_size; // section size - word
+	public long sh_link; // misc info - word
+	public long sh_info; // misc info - word
+	public long sh_addralign; // memory alignment - word
+	public long sh_entsize; // entry size if table - word
 
 	public void parse(ByteBuffer buffer) {
 		sh_name = Unsigned.getU32(buffer);
