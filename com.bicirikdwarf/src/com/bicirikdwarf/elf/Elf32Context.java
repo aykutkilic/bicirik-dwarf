@@ -112,6 +112,10 @@ public class Elf32Context {
 			return null;
 		return shdrsByName.get(name);
 	}
+	
+	public Shdr getSectionByIndex(int index) {
+		return shdrs.get(index);
+	}
 
 	public List<Sym> getSymbols() {
 		return symbols;
@@ -119,6 +123,10 @@ public class Elf32Context {
 
 	public ByteBuffer getSectionBuffer(Shdr shdr) {
 		return ElfUtils.cloneSection(elfBuffer, (int) shdr.sh_offset, (int) shdr.sh_size);
+	}
+	
+	public ByteBuffer getElfBuffer() {
+		return elfBuffer;
 	}
 
 	public ByteBuffer getSectionBufferByName(String sectionName) throws InvalidParameterException {
@@ -147,5 +155,15 @@ public class Elf32Context {
 	private String readSectionHeaderString(int offset) {
 		shstrtab_buffer.position(offset);
 		return ElfUtils.getNTString(shstrtab_buffer);
+	}
+	
+	public Sym getSymbolByName(String symbolName) {		
+		for(Sym iSym : getSymbols()) {
+			String currentSymbolName = readString(iSym.st_name);
+			if(currentSymbolName.equals(symbolName)) {
+				return iSym;
+			}
+		}
+		return null;
 	}
 }
