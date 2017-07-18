@@ -112,6 +112,10 @@ public class Elf32Context {
 			return null;
 		return shdrsByName.get(name);
 	}
+	
+	public Shdr getSectionByIndex(int index) {
+		return shdrs.get(index);
+	}
 
 	public List<Sym> getSymbols() {
 		return symbols;
@@ -119,6 +123,10 @@ public class Elf32Context {
 
 	public ByteBuffer getSectionBuffer(Shdr shdr) {
 		return ElfUtils.cloneSection(elfBuffer, (int) shdr.sh_offset, (int) shdr.sh_size);
+	}
+	
+	public ByteBuffer getElfBuffer() {
+		return elfBuffer;
 	}
 
 	public ByteBuffer getSectionBufferByName(String sectionName) throws InvalidParameterException {
