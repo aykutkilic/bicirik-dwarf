@@ -148,4 +148,14 @@ public class Elf32Context {
 		shstrtab_buffer.position(offset);
 		return ElfUtils.getNTString(shstrtab_buffer);
 	}
+	
+	public Sym getSymbolByName(String symbolName) {		
+		for(Sym iSym : getSymbols()) {
+			String currentSymbolName = readString(iSym.st_name);
+			if(currentSymbolName.equals(symbolName)) {
+				return iSym;
+			}
+		}
+		return null;
+	}
 }
