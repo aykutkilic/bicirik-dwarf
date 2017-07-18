@@ -1,6 +1,7 @@
 package com.bicirikdwarf.elf.reader;
 
 import java.nio.ByteBuffer;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import com.bicirikdwarf.elf.Elf32Context;
@@ -17,7 +18,9 @@ public class ElfReader {
 	}
 	
 	public String getStringSymbolValue(String symbolName) {
+		Objects.requireNonNull(symbolName, "The given symbol name is null");
 		Sym symbol = elf.getSymbolByName(symbolName);
+		if(symbol == null) throw new NoSuchElementException("No such symbol with name " + symbolName);
 		Shdr header = elf.getSectionByIndex(symbol.st_shndx);
 		long finalOffset = (symbol.st_value - header.sh_addr) + header.sh_offset;
 
